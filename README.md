@@ -1,2 +1,5 @@
-# Lab-0759
-Lab Tasks for 24K-0759
+- Hello There!
+- My name is Usman Hasan . 24K-0759
+- I am currently enrolled in FAST NUCES doing Bachelor in CS
+- With a little background in coding and a passion for coding, I will soon master the art of computing 🎉
+- ![](https://www.pinterest.com/pin/96334879523564424/)
