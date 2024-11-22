@@ -13,11 +13,9 @@ int grid[3][3] = {{EMPTY, EMPTY, EMPTY},
 
 // Current player (1 for "X", 2 for "O")
 int currentPlayer = X_PLAYER;
-int space;
+int space = 0;  // Tracks how many spaces are filled
 
-//------------------------------------------------------------------------------------
-// Program main entry point
-//------------------------------------------------------------------------------------
+// Function to reset the game
 void ResetGame()
 {
     // Clear the grid and reset the player
@@ -30,23 +28,15 @@ void ResetGame()
     currentPlayer = X_PLAYER;  // Reset to Player X's turn
 }
 
-
-
-
-
-
 int main(void)
 {
     // Initialization
-    //--------------------------------------------------------------------------------------
     const int screenWidth = 600;
     const int screenHeight = 600;
     InitWindow(screenWidth, screenHeight, "Tic-Tac-Toe");
-    int space=0;
 
     // Set target FPS
     SetTargetFPS(60);
-    //--------------------------------------------------------------------------------------
 
     // Define the grid size and cell size
     int gridSize = 3;
@@ -56,8 +46,7 @@ int main(void)
     while (!WindowShouldClose())
     {
         // Update
-        //----------------------------------------------------------------------------------
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && space < 9) {
             // Get mouse position
             int mouseX = GetMouseX();
             int mouseY = GetMouseY();
@@ -71,23 +60,18 @@ int main(void)
                 // Set the cell based on the current player
                 if (currentPlayer == X_PLAYER) {
                     grid[row][col] = X_PLAYER;
-                    space++;
                 } else {
                     grid[row][col] = O_PLAYER;
-                    space++;
                 }
+                space++;  // Increment the filled spaces count
 
                 // Switch player after each move
                 currentPlayer = (currentPlayer == X_PLAYER) ? O_PLAYER : X_PLAYER;
             }
         }
-       }
-        //----------------------------------------------------------------------------------
 
         // Draw
-        //----------------------------------------------------------------------------------
         BeginDrawing();
-
         ClearBackground(RAYWHITE);  // Clear the background to white
 
         // Draw the Tic-Tac-Toe grid (3x3)
@@ -106,10 +90,8 @@ int main(void)
             for (int col = 0; col < gridSize; col++) {
                 if (grid[row][col] == X_PLAYER) {
                     DrawText("X", col * cellSize + cellSize / 3, row * cellSize + cellSize / 3, 80, DARKBLUE);
-                    
                 } else if (grid[row][col] == O_PLAYER) {
                     DrawText("O", col * cellSize + cellSize / 3, row * cellSize + cellSize / 3, 80, DARKGREEN);
-                    
                 }
             }
         }
@@ -122,26 +104,24 @@ int main(void)
             snprintf(turnText, sizeof(turnText), "Player O's turn");
         }
         DrawText(turnText, screenWidth / 2 - MeasureText(turnText, 20) / 2, screenHeight - 40, 20, DARKGRAY);
+
+        // When the grid is full
         if (space == 9) {
-            ClearBackground(RAYWHITE);
             DrawText("Grid is full", screenWidth / 2 - MeasureText("Grid is full", 20) / 2, screenHeight / 2, 20, BLUE);
             DrawText("Click anywhere to reset", screenWidth / 2 - MeasureText("Click anywhere to reset", 20) / 2, screenHeight / 2 + 30, 20, DARKGRAY);
 
-            
+            // Wait for a click to reset the game
             if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                ResetGame();  
+                
+                ResetGame();  // Reset the game
             }
-                    
         }
-        
+
         EndDrawing();
-        //----------------------------------------------------------------------------------
-    
+    }
 
     // De-Initialization
-    //--------------------------------------------------------------------------------------
     CloseWindow();  // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
 
     return 0;
 }
