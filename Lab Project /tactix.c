@@ -15,6 +15,34 @@ int grid[3][3] = {{EMPTY, EMPTY, EMPTY},
 int currentPlayer = X_PLAYER;
 int space = 0;  // Tracks how many spaces are filled
 
+int Winner() {
+    // Check rows
+    for (int i = 0; i < 3; i++) {
+        if (grid[i][0] != EMPTY && grid[i][0] == grid[i][1] && grid[i][1] == grid[i][2]) {
+            return grid[i][0]; // Return the winning player (X_PLAYER or O_PLAYER)
+        }
+    }
+
+    // Check columns
+    for (int j = 0; j < 3; j++) {
+        if (grid[0][j] != EMPTY && grid[0][j] == grid[1][j] && grid[1][j] == grid[2][j]) {
+            return grid[0][j]; // Return the winning player (X_PLAYER or O_PLAYER)
+        }
+    }
+
+    // Check diagonals
+    if (grid[0][0] != EMPTY && grid[0][0] == grid[1][1] && grid[1][1] == grid[2][2]) {
+        return grid[0][0]; // Return the winning player (X_PLAYER or O_PLAYER)
+    }
+    if (grid[0][2] != EMPTY && grid[0][2] == grid[1][1] && grid[1][1] == grid[2][0]) {
+        return grid[0][2]; // Return the winning player (X_PLAYER or O_PLAYER)
+    }
+
+    // No winner
+    return EMPTY;
+}
+
+
 // Function to reset the game
 void ResetGame()
 {
@@ -44,9 +72,9 @@ int main(void)
 
     // Main game loop
     while (!WindowShouldClose())
-    {
+    { int win =Winner();
         // Update
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && space < 9) {
+        if (space < 9 && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) ) {
             // Get mouse position
             int mouseX = GetMouseX();
             int mouseY = GetMouseY();
@@ -58,63 +86,73 @@ int main(void)
             // Only update the cell if it's empty
             if (grid[row][col] == EMPTY) {
                 // Set the cell based on the current player
-                if (currentPlayer == X_PLAYER) {
-                    grid[row][col] = X_PLAYER;
-                } else {
-                    grid[row][col] = O_PLAYER;
-                }
+                grid[row][col] = currentPlayer;
                 space++;  // Increment the filled spaces count
 
                 // Switch player after each move
                 currentPlayer = (currentPlayer == X_PLAYER) ? O_PLAYER : X_PLAYER;
             }
+            
+            
+            
         }
 
         // Draw
         BeginDrawing();
-        ClearBackground(RAYWHITE);  // Clear the background to white
+        
+        // Clear the screen
+        ClearBackground(RAYWHITE);
+        
 
-        // Draw the Tic-Tac-Toe grid (3x3)
-        for (int i = 1; i < gridSize; i++)  // Draw vertical lines
-        {
-            DrawLine(i * cellSize, 0, i * cellSize, screenHeight, BLACK);
-        }
+        if (space < 9 && win == EMPTY) {
+            // Draw the Tic-Tac-Toe grid (3x3)
+            for (int i = 1; i < gridSize; i++)  // Draw vertical lines
+            {
+                DrawLine(i * cellSize, 0, i * cellSize, screenHeight, BLACK);
+            }
 
-        for (int i = 1; i < gridSize; i++)  // Draw horizontal lines
-        {
-            DrawLine(0, i * cellSize, screenWidth, i * cellSize, BLACK);
-        }
+            for (int i = 1; i < gridSize; i++)  // Draw horizontal lines
+            {
+                DrawLine(0, i * cellSize, screenWidth, i * cellSize, BLACK);
+            }
 
-        // Draw the "X" and "O" marks based on the grid state
-        for (int row = 0; row < gridSize; row++) {
-            for (int col = 0; col < gridSize; col++) {
-                if (grid[row][col] == X_PLAYER) {
-                    DrawText("X", col * cellSize + cellSize / 3, row * cellSize + cellSize / 3, 80, DARKBLUE);
-                } else if (grid[row][col] == O_PLAYER) {
-                    DrawText("O", col * cellSize + cellSize / 3, row * cellSize + cellSize / 3, 80, DARKGREEN);
+            // Draw the "X" and "O" marks based on the grid state
+            for (int row = 0; row < gridSize; row++) {
+                for (int col = 0; col < gridSize; col++) {
+                    if (grid[row][col] == X_PLAYER) {
+                        DrawText("X", col * cellSize + cellSize / 3, row * cellSize + cellSize / 3, 80, DARKBLUE);
+                    } else if (grid[row][col] == O_PLAYER) {
+                        DrawText("O", col * cellSize + cellSize / 3, row * cellSize + cellSize / 3, 80, DARKGREEN);
+                    }
                 }
             }
-        }
 
-        // Display whose turn it is
-        char turnText[20];
-        if (currentPlayer == X_PLAYER) {
-            snprintf(turnText, sizeof(turnText), "Player X's turn");
-        } else {
-            snprintf(turnText, sizeof(turnText), "Player O's turn");
-        }
-        DrawText(turnText, screenWidth / 2 - MeasureText(turnText, 20) / 2, screenHeight - 40, 20, DARKGRAY);
+            // Display whose turn it is
+            char turnText[20];
+            snprintf(turnText, sizeof(turnText), "Player %s's turn", currentPlayer == X_PLAYER ? "X" : "O");
+            DrawText(turnText, screenWidth / 2 - MeasureText(turnText, 20) / 2, screenHeight - 40, 20, DARKGRAY);
 
-        // When the grid is full
-        if (space == 9) {
-            DrawText("Grid is full", screenWidth / 2 - MeasureText("Grid is full", 20) / 2, screenHeight / 2, 20, BLUE);
-            DrawText("Click anywhere to reset", screenWidth / 2 - MeasureText("Click anywhere to reset", 20) / 2, screenHeight / 2 + 30, 20, DARKGRAY);
+        } else if (space ==9) {
+            // Display the full-screen message when the grid is full
+            DrawText("Grid is full, press 1 to reset", screenWidth / 2 - MeasureText("Grid is full, press 1 to reset", 20) / 2, screenHeight / 2, 20, BLUE);
 
-            // Wait for a click to reset the game
-            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                
+            // Wait for key press to reset the game
+            if (IsKeyPressed(KEY_ONE)) {
                 ResetGame();  // Reset the game
             }
+        } else if (win != EMPTY){
+            if (win ==1){
+        
+             DrawText("Player 1 Wins", screenWidth / 2 - MeasureText("Player 1 Wins", 40) / 2, screenHeight / 2, 40, GREEN);
+            }
+            else {
+                DrawText("Player 2 Wins", screenWidth / 2 - MeasureText("Player 2 Wins", 40) / 2, screenHeight / 2, 40, GREEN);
+            }
+        // Wait for reset
+        DrawText("Press 1 to reset", screenWidth / 2 - MeasureText("Press 1 to reset", 20) / 2, screenHeight / 2 + 50, 20, DARKGRAY);
+        if (IsKeyPressed(KEY_ONE)) {
+            ResetGame();
+        }
         }
 
         EndDrawing();
