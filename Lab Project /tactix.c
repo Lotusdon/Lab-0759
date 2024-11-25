@@ -61,7 +61,7 @@ int main(void)
     // Initialization
     const int screenWidth = 600;
     const int screenHeight = 600;
-    InitWindow(screenWidth, screenHeight, "Tic-Tac-Toe");
+    InitWindow(screenWidth, screenHeight, "Tactix");
 
     // Set target FPS
     SetTargetFPS(60);
